@@ -17,12 +17,22 @@
       }
 
       @media print {
+        @page {
+          margin: 1.5cm;
+        }
+
+        body {
+          font-family: 'Epilogue', sans-serif;
+        }
+
         body * {
           visibility: hidden;
         }
+        
         #recipe-content, #recipe-content * {
           visibility: visible;
         }
+        
         #recipe-content {
           position: absolute;
           left: 0;
@@ -31,12 +41,16 @@
           border: none;
           box-shadow: none;
           margin: 0;
-          padding: 2rem;
+          padding: 0;
+          font-size: 11pt;
+          line-height: 1.5;
         }
+        
         .print-button {
           display: none;
         }
-        /* Improve print layout */
+
+        /* Reset colors for printing */
         #recipe-content h2, #recipe-content h3, #recipe-content p, #recipe-content span, #recipe-content li {
           color: black !important;
         }
@@ -47,13 +61,52 @@
         #recipe-content .bg-orange-400,
         #recipe-content .bg-orange-50 {
           background-color: transparent !important;
+          border: 1px solid #eee; /* Add a light border to info cards */
         }
+        
+        #recipe-content header h2 {
+            font-size: 20pt;
+        }
+
+        #recipe-content header p {
+            font-size: 12pt;
+        }
+
+        /* Layout adjustments */
+        .print-layout-container {
+          display: block !important; /* Stack sections vertically */
+        }
+
+        #instructions-section {
+          margin-top: 2rem;
+        }
+        
+        /* Page break control */
+        #recipe-content header, 
+        #recipe-content li {
+          page-break-inside: avoid;
+        }
+
+        #instructions-section,
+        #notes-section {
+            page-break-before: auto;
+        }
+
+        /* List styling */
         #recipe-content ol li span {
           border: 1px solid #ccc;
         }
-        #recipe-content ul li span {
-            border: 1px solid #ccc;
-            border-radius: 50%;
+        
+        #ingredients-section ul {
+            list-style-type: disc;
+            padding-left: 2rem;
+        }
+        #ingredients-section ul li {
+            display: list-item;
+            padding-left: 0.5rem;
+        }
+        #ingredients-section ul li > span:first-child {
+            display: none; /* Hide the decorative span */
         }
       }
     </style>

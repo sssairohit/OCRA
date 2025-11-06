@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import type { Recipe } from '../types';
 import { ClockIcon, UsersIcon, ClipboardIcon, ListIcon, StarIcon, PrinterIcon, ShareIcon, CheckIcon } from './icons';
@@ -78,8 +79,8 @@ export const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {
         <InfoCard icon={<UsersIcon className="h-8 w-8"/>} label="Servings" value={recipe.servings} />
       </div>
 
-      <div className="grid md:grid-cols-5 gap-8">
-        <section className="md:col-span-2">
+      <div className="grid md:grid-cols-5 gap-8 print-layout-container">
+        <section id="ingredients-section" className="md:col-span-2">
             <h3 className="flex items-center text-[1.8rem] font-semibold mb-4 text-gray-800">
                 <ClipboardIcon className="h-7 w-7 mr-3 text-orange-500" />
                 Ingredients
@@ -88,13 +89,15 @@ export const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {
                 {recipe.ingredients.map((ingredient, index) => (
                     <li key={index} className="flex items-start">
                         <span className="bg-orange-400 w-2.5 h-2.5 mt-1.5 mr-3 flex-shrink-0"></span>
-                        <span>{ingredient}</span>
+                        <span>
+                            <strong className="font-semibold text-gray-800">{ingredient.quantity}</strong> {ingredient.name}
+                        </span>
                     </li>
                 ))}
             </ul>
         </section>
 
-        <section className="md:col-span-3">
+        <section id="instructions-section" className="md:col-span-3">
             <h3 className="flex items-center text-[1.8rem] font-semibold mb-4 text-gray-800">
                 <ListIcon className="h-7 w-7 mr-3 text-orange-500" />
                 Instructions
@@ -111,7 +114,7 @@ export const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {
       </div>
 
       {recipe.notes && (
-          <section className="mt-10 pt-6 border-t">
+          <section id="notes-section" className="mt-10 pt-6 border-t">
               <h3 className="flex items-center text-[1.8rem] font-semibold mb-4 text-gray-800">
                   <StarIcon className="h-7 w-7 mr-3 text-orange-500" />
                   Chef's Notes

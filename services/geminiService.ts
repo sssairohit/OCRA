@@ -20,8 +20,15 @@ const recipeSchema = {
     servings: { type: Type.STRING, description: "Number of servings, e.g., '4 servings'." },
     ingredients: {
       type: Type.ARRAY,
-      description: "A list of all ingredients with quantities.",
-      items: { type: Type.STRING }
+      description: "A list of all ingredients, each with a name and quantity.",
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          quantity: { type: Type.STRING, description: "The quantity of the ingredient, e.g., '2 cups', '100g', '1 tsp'." },
+          name: { type: Type.STRING, description: "The name of the ingredient, e.g., 'all-purpose flour', 'sugar'." },
+        },
+        required: ['quantity', 'name']
+      }
     },
     instructions: {
       type: Type.ARRAY,
