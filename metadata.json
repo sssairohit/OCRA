@@ -1,0 +1,5 @@
+{
+  "name": "One Cookbook to Rule them All (OCRA)",
+  "description": "A search engine that dynamically uses AI to immediately generate the recipe for any searched dish in seconds and presents it in a clean, minimal interface.",
+  "requestFramePermissions": []
+}
