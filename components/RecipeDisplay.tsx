@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Recipe } from '../types';
 import { ClockIcon, UsersIcon, ListIcon, ClipboardIcon, StarIcon, PrinterIcon, ShareIcon, CheckIcon } from './icons';
 
@@ -7,9 +7,15 @@ interface RecipeDisplayProps {
 }
 
 export const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {
-    const [copied, setCopied] = React.useState(false);
+    const [copied, setCopied] = useState(false);
+    const [unitSystem, setUnitSystem] = useState<'imperial' | 'metric'>('imperial');
 
     const handleCopy = () => {
+        const ingredientsText = recipe.ingredients.map(ingredient => {
+            const quantity = unitSystem === 'imperial' ? ingredient.imperial : ingredient.metric;
+            return `${quantity} ${ingredient.name}`;
+        }).join('\n');
+
         const recipeText = `
 Recipe: ${recipe.name}
 ${recipe.description}
@@ -19,7 +25,7 @@ Cook Time: ${recipe.cookTime}
 Servings: ${recipe.servings}
 
 Ingredients:
-${recipe.ingredients.join('\n')}
+${ingredientsText}
 
 Instructions:
 ${recipe.instructions.map((step, index) => `${index + 1}. ${step}`).join('\n')}
@@ -80,13 +86,35 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
 
             <div className="flex flex-col md:flex-row gap-8 md:gap-12">
                 <section className="md:w-1/3">
-                    <h2 className="flex items-center gap-3 text-2xl font-semibold text-gray-800 mb-4">
-                        <ListIcon className="w-6 h-6 text-orange-500" />
-                        Ingredients
-                    </h2>
-                    <ul className="space-y-3 list-disc list-inside text-gray-700">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="flex items-center gap-3 text-2xl font-semibold text-gray-800">
+                            <ListIcon className="w-6 h-6 text-orange-500" />
+                            Ingredients
+                        </h2>
+                        <div className="flex items-center gap-1 p-0.5 bg-gray-100 rounded-md">
+                            <button 
+                                onClick={() => setUnitSystem('imperial')}
+                                className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'imperial' ? 'bg-white shadow-sm text-orange-600' : 'bg-transparent text-gray-500 hover:text-gray-800'}`}
+                            >
+                                Imperial
+                            </button>
+                            <button 
+                                onClick={() => setUnitSystem('metric')}
+                                className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'metric' ? 'bg-white shadow-sm text-orange-600' : 'bg-transparent text-gray-500 hover:text-gray-800'}`}
+                            >
+                                Metric
+                            </button>
+                        </div>
+                    </div>
+
+                    <ul className="space-y-3 text-gray-700 text-[1.4rem]">
                         {recipe.ingredients.map((ingredient, index) => (
-                            <li key={index}>{ingredient}</li>
+                            <li key={index} className="flex gap-3 items-baseline">
+                                <span className="font-semibold text-orange-600 w-24 flex-shrink-0 text-right pr-2">
+                                    {unitSystem === 'imperial' ? ingredient.imperial : ingredient.metric}
+                                </span>
+                                <span>{ingredient.name}</span>
+                            </li>
                         ))}
                     </ul>
                 </section>
@@ -96,10 +124,10 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                         <ClipboardIcon className="w-6 h-6 text-orange-500" />
                         Instructions
                     </h2>
-                    <ol className="space-y-4 text-gray-700">
+                    <ol className="space-y-4 text-gray-700 text-[1.4rem]">
                         {recipe.instructions.map((step, index) => (
                             <li key={index} className="flex gap-3">
-                                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">{index + 1}</div>
+                                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-[1.2rem]">{index + 1}</div>
                                 <p className="flex-1 pt-1">{step}</p>
                             </li>
                         ))}
@@ -113,7 +141,7 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                         <StarIcon className="w-6 h-6 text-orange-500" />
                         Chef's Tips
                     </h2>
-                    <ul className="space-y-3 list-disc list-inside text-gray-600">
+                    <ul className="space-y-3 list-disc list-inside text-gray-600 text-[1.4rem]">
                         {recipe.tips.map((tip, index) => (
                             <li key={index}>{tip}</li>
                         ))}
@@ -122,15 +150,15 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
             )}
 
             <div className="mt-10 border-t pt-6 flex items-center justify-end gap-3">
-                <button onClick={handleCopy} className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400">
+                <button onClick={handleCopy} className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 text-[1.2rem]">
                     {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardIcon className="w-5 h-5" />}
                     {copied ? 'Copied!' : 'Copy'}
                 </button>
-                <button onClick={handleShare} className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400">
+                <button onClick={handleShare} className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 text-[1.2rem]">
                     <ShareIcon className="w-5 h-5" />
                     Share
                 </button>
-                 <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400">
+                 <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 text-[1.2rem]">
                     <PrinterIcon className="w-5 h-5" />
                     Print
                 </button>

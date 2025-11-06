@@ -15,8 +15,16 @@ const recipeSchema = {
     servings: { type: Type.STRING, description: 'Number of servings, e.g., "4 people".' },
     ingredients: {
       type: Type.ARRAY,
-      items: { type: Type.STRING },
-      description: 'A list of ingredients with quantities.'
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          name: { type: Type.STRING, description: 'The name of the ingredient.' },
+          imperial: { type: Type.STRING, description: 'The quantity in imperial units (e.g., "1 cup", "2 tbsp").' },
+          metric: { type: Type.STRING, description: 'The quantity in metric units (e.g., "240ml", "30g").' }
+        },
+        required: ['name', 'imperial', 'metric']
+      },
+      description: 'A list of ingredients, each with its name and quantity in both imperial and metric units.'
     },
     instructions: {
       type: Type.ARRAY,
@@ -39,7 +47,7 @@ const recipeSchema = {
  */
 export const generateRecipe = async (dishName: string): Promise<Recipe> => {
   try {
-    const prompt = `Generate a detailed recipe for ${dishName}. Include a brief description, preparation time, cooking time, number of servings, a list of ingredients, and step-by-step instructions. Also include some optional tips if possible.`;
+    const prompt = `Generate a detailed recipe for ${dishName}. Include a brief description, preparation time, cooking time, number of servings, step-by-step instructions, and some optional tips. For each ingredient, provide the name, and the quantity in both imperial (e.g., cups, oz) and metric (e.g., grams, ml) units.`;
 
     // Call the Gemini API to generate content based on the prompt and schema.
     const response = await ai.models.generateContent({
