@@ -1,16 +1,10 @@
-
-export interface Ingredient {
-  name: string;
-  quantity: string;
-}
-
 export interface Recipe {
-  dishName: string;
+  name: string;
   description: string;
-  prepTime?: string;
-  cookTime?: string;
-  servings?: string;
-  ingredients: Ingredient[];
+  prepTime: string;
+  cookTime: string;
+  servings: string;
+  ingredients: string[];
   instructions: string[];
-  notes?: string;
+  tips?: string[];
 }
