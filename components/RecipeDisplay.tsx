@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { Recipe } from '../types';
 import { ClockIcon, UsersIcon, ListIcon, ClipboardIcon, StarIcon, PrinterIcon, ShareIcon, CheckIcon, HeartIcon, BookmarkIcon } from './icons';
 
@@ -8,10 +8,19 @@ interface RecipeDisplayProps {
 
 export const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {
     const [copied, setCopied] = useState(false);
+    const [copyStatus, setCopyStatus] = useState('');
     const [unitSystem, setUnitSystem] = useState<'imperial' | 'metric'>('imperial');
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [isSaved, setIsSaved] = useState(false);
+    const articleRef = useRef<HTMLElement>(null);
+
+    // Focus management: move focus to the recipe container when it's displayed
+    useEffect(() => {
+        if (articleRef.current) {
+            articleRef.current.focus();
+        }
+    }, [recipe]);
 
     useEffect(() => {
         try {
@@ -67,7 +76,11 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
 
         navigator.clipboard.writeText(recipeText).then(() => {
             setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+            setCopyStatus('Recipe copied to clipboard!');
+            setTimeout(() => {
+                setCopied(false);
+                setCopyStatus('');
+            }, 2000);
         });
     };
 
@@ -95,7 +108,13 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
 
 
     return (
-        <article id="recipe-content" className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 animate-fade-in-up overflow-hidden">
+        <article 
+            id="recipe-content" 
+            ref={articleRef}
+            tabIndex={-1}
+            aria-labelledby="recipe-title"
+            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 animate-fade-in-up overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-4 focus:ring-orange-500 dark:focus:ring-offset-gray-900"
+        >
             {recipe.imageUrl && (
                 <img 
                     src={recipe.imageUrl} 
@@ -105,12 +124,12 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
             )}
             <div className="p-6 md:p-10">
                 <header className="border-b dark:border-gray-700 pb-6 mb-6">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100">{recipe.name}</h1>
+                    <h1 id="recipe-title" className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100">{recipe.name}</h1>
                     <p className="mt-3 text-lg text-gray-600 dark:text-gray-400">{recipe.description}</p>
 
                     <div className="mt-4 flex items-center gap-3">
-                        <h3 className="text-[1.4rem] font-semibold text-gray-800 dark:text-gray-200">Rate this recipe:</h3>
-                        <div className="flex items-center">
+                        <h3 id="rating-label" className="text-[1.4rem] font-semibold text-gray-800 dark:text-gray-200">Rate this recipe:</h3>
+                        <div role="group" aria-labelledby="rating-label" className="flex items-center">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <button
                                     key={star}
@@ -119,6 +138,7 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                                     onMouseEnter={() => setHoverRating(star)}
                                     onMouseLeave={() => setHoverRating(0)}
                                     className="focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 rounded-full"
+                                    aria-pressed={rating === star}
                                     aria-label={`Rate ${star} out of 5 stars`}
                                 >
                                     <StarIcon
@@ -183,15 +203,17 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                                 <ListIcon className="w-6 h-6 text-orange-500" />
                                 Ingredients
                             </h2>
-                            <div className="flex items-center gap-1 p-0.5 bg-gray-100 dark:bg-gray-700 rounded-md print-button">
+                            <div role="group" aria-label="Select unit system" className="flex items-center gap-1 p-0.5 bg-gray-100 dark:bg-gray-700 rounded-md print-button">
                                 <button 
                                     onClick={() => setUnitSystem('imperial')}
+                                    aria-pressed={unitSystem === 'imperial'}
                                     className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'imperial' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-300' : 'bg-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`}
                                 >
                                     Imperial
                                 </button>
                                 <button 
                                     onClick={() => setUnitSystem('metric')}
+                                    aria-pressed={unitSystem === 'metric'}
                                     className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'metric' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-300' : 'bg-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`}
                                 >
                                     Metric
@@ -244,6 +266,8 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                 <div className="mt-10 border-t dark:border-gray-700 pt-6 flex items-center justify-end gap-3 print-button">
                     <button 
                         onClick={handleToggleSave} 
+                        aria-pressed={isSaved}
+                        aria-label={isSaved ? 'Unsave recipe' : 'Save recipe'}
                         className={`flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 text-[1.2rem] ${isSaved ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-300'}`}
                     >
                         <BookmarkIcon className={`w-5 h-5 transition-colors ${isSaved ? 'fill-current' : ''}`} />
@@ -261,6 +285,10 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                         <PrinterIcon className="w-5 h-5" />
                         Print
                     </button>
+                </div>
+
+                <div aria-live="polite" role="status" className="sr-only">
+                    {copyStatus}
                 </div>
             </div>
         </article>
