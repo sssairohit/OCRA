@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Recipe } from './types';
 import { generateRecipe } from './services/geminiService';
 import { SearchBar } from './components/SearchBar';
@@ -10,6 +10,14 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const dishName = urlParams.get('dish');
+    if (dishName) {
+      handleSearch(decodeURIComponent(dishName));
+    }
+  }, []); // Runs once on initial load
+
   const handleSearch = async (query: string) => {
     if (!query) return;
     setIsLoading(true);
@@ -18,8 +26,16 @@ const App: React.FC = () => {
     try {
       const result = await generateRecipe(query);
       setRecipe(result);
+      // Update URL to be shareable
+      const url = new URL(window.location.href);
+      url.searchParams.set('dish', encodeURIComponent(query));
+      window.history.pushState({ path: url.href }, '', url.href);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+       // Clear URL param on error
+       const url = new URL(window.location.href);
+       url.searchParams.delete('dish');
+       window.history.pushState({ path: url.href }, '', url.href);
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +74,7 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto mt-8">
           {isLoading && (
             <div className="flex justify-center items-center space-x-3 text-[1.4rem] font-medium text-gray-600">
-              <svg className="animate-spin h-8 w-8 text-orange-500" xmlns="http://www.w.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-8 w-8 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>

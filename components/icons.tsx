@@ -67,3 +67,17 @@ export const PrinterIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
       <rect x="6" y="14" width="12" height="8"></rect>
     </FeatherIcon>
 );
+
+export const ShareIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <FeatherIcon {...props}>
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+    <polyline points="16 6 12 2 8 6"></polyline>
+    <line x1="12" y1="2" x2="12" y2="15"></line>
+  </FeatherIcon>
+);
+
+export const CheckIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <FeatherIcon {...props}>
+      <polyline points="20 6 9 17 4 12"></polyline>
+  </FeatherIcon>
+);

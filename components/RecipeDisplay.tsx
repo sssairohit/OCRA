@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Recipe } from '../types';
-import { ClockIcon, UsersIcon, ClipboardIcon, ListIcon, StarIcon, PrinterIcon } from './icons';
+import { ClockIcon, UsersIcon, ClipboardIcon, ListIcon, StarIcon, PrinterIcon, ShareIcon, CheckIcon } from './icons';
 
 interface RecipeDisplayProps {
   recipe: Recipe;
@@ -18,20 +18,54 @@ const InfoCard: React.FC<{ icon: React.ReactNode; label: string; value?: string 
 };
 
 export const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {
+  const [isCopied, setIsCopied] = useState(false);
+
   const handlePrint = () => {
     window.print();
   };
 
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+    });
+  };
+
   return (
     <div id="recipe-content" className="bg-white border border-gray-200 p-6 sm:p-8 md:p-10 animate-fade-in-up relative">
-      <button
-        onClick={handlePrint}
-        className="print-button absolute top-6 right-6 flex items-center px-4 py-2 bg-orange-500 text-white font-semibold text-[1.2rem] hover:bg-orange-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
-        aria-label="Print Recipe"
-      >
-        <PrinterIcon className="w-5 h-5 mr-2" />
-        Print Recipe
-      </button>
+      <div className="print-button absolute top-6 right-6 flex items-center space-x-2">
+        <button
+          onClick={handleShare}
+          className={`flex items-center px-4 py-2 font-semibold text-[1.2rem] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+            isCopied 
+              ? 'bg-green-500 text-white hover:bg-green-600 focus:ring-green-400' 
+              : 'bg-orange-500 text-white hover:bg-orange-600 focus:ring-orange-400'
+          }`}
+          aria-label="Share Recipe"
+          disabled={isCopied}
+        >
+          {isCopied ? (
+            <>
+              <CheckIcon className="w-5 h-5 mr-2" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <ShareIcon className="w-5 h-5 mr-2" />
+              Share
+            </>
+          )}
+        </button>
+        <button
+          onClick={handlePrint}
+          className="flex items-center px-4 py-2 bg-gray-600 text-white font-semibold text-[1.2rem] hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          aria-label="Print Recipe"
+        >
+          <PrinterIcon className="w-5 h-5 mr-2" />
+          Print
+        </button>
+      </div>
+
 
       <header className="text-center border-b pb-6 mb-6">
         <h2 className="text-[2rem] sm:text-[2.2rem] font-bold text-gray-800">{recipe.dishName}</h2>
