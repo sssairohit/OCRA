@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Recipe } from '../types';
-import { ClockIcon, UsersIcon, ListIcon, ClipboardIcon, StarIcon, PrinterIcon, ShareIcon, CheckIcon } from './icons';
+import { ClockIcon, UsersIcon, ListIcon, ClipboardIcon, StarIcon, PrinterIcon, ShareIcon, CheckIcon, HeartIcon } from './icons';
 
 interface RecipeDisplayProps {
   recipe: Recipe;
@@ -82,6 +82,33 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                         <span>Serves: {recipe.servings}</span>
                     </div>
                 </div>
+
+                {recipe.nutritionalInfo && (
+                    <div className="mt-6 border-t pt-6">
+                        <h3 className="flex items-center gap-3 text-xl font-semibold text-gray-800 mb-3">
+                            <HeartIcon className="w-6 h-6 text-orange-500" />
+                            Nutritional Info (per serving)
+                        </h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                            <div className="bg-orange-50 p-3">
+                                <p className="text-[1.2rem] font-medium text-gray-500">Calories</p>
+                                <p className="text-[1.6rem] font-bold text-orange-600">{recipe.nutritionalInfo.calories}</p>
+                            </div>
+                            <div className="bg-orange-50 p-3">
+                                <p className="text-[1.2rem] font-medium text-gray-500">Protein</p>
+                                <p className="text-[1.6rem] font-bold text-orange-600">{recipe.nutritionalInfo.protein}</p>
+                            </div>
+                            <div className="bg-orange-50 p-3">
+                                <p className="text-[1.2rem] font-medium text-gray-500">Fat</p>
+                                <p className="text-[1.6rem] font-bold text-orange-600">{recipe.nutritionalInfo.fat}</p>
+                            </div>
+                            <div className="bg-orange-50 p-3">
+                                <p className="text-[1.2rem] font-medium text-gray-500">Carbs</p>
+                                <p className="text-[1.6rem] font-bold text-orange-600">{recipe.nutritionalInfo.carbs}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </header>
 
             <div className="flex flex-col md:flex-row gap-8 md:gap-12">

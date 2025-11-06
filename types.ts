@@ -4,6 +4,13 @@ export interface Ingredient {
   metric: string;
 }
 
+export interface NutritionalInfo {
+  calories: string;
+  protein: string;
+  fat: string;
+  carbs: string;
+}
+
 export interface Recipe {
   name: string;
   description: string;
@@ -13,4 +20,5 @@ export interface Recipe {
   ingredients: Ingredient[];
   instructions: string[];
   tips?: string[];
+  nutritionalInfo?: NutritionalInfo;
 }

@@ -31,6 +31,17 @@ const recipeSchema = {
       items: { type: Type.STRING },
       description: 'Step-by-step cooking instructions.'
     },
+    nutritionalInfo: {
+        type: Type.OBJECT,
+        description: 'Estimated nutritional information per serving.',
+        properties: {
+            calories: { type: Type.STRING, description: 'e.g., "550 kcal"' },
+            protein: { type: Type.STRING, description: 'e.g., "30g"' },
+            fat: { type: Type.STRING, description: 'e.g., "25g"' },
+            carbs: { type: Type.STRING, description: 'e.g., "45g"' }
+        },
+        required: ['calories', 'protein', 'fat', 'carbs']
+    },
     tips: {
         type: Type.ARRAY,
         items: { type: Type.STRING },
@@ -47,7 +58,7 @@ const recipeSchema = {
  */
 export const generateRecipe = async (dishName: string): Promise<Recipe> => {
   try {
-    const prompt = `Generate a detailed recipe for ${dishName}. Include a brief description, preparation time, cooking time, number of servings, step-by-step instructions, and some optional tips. For each ingredient, provide the name, and the quantity in both imperial (e.g., cups, oz) and metric (e.g., grams, ml) units.`;
+    const prompt = `Generate a detailed recipe for ${dishName}. Include a brief description, preparation time, cooking time, number of servings, step-by-step instructions, and some optional tips. For each ingredient, provide the name, and the quantity in both imperial (e.g., cups, oz) and metric (e.g., grams, ml) units. Also provide estimated nutritional information per serving, including calories, protein, fat, and carbohydrates.`;
 
     // Call the Gemini API to generate content based on the prompt and schema.
     const response = await ai.models.generateContent({
