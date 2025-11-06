@@ -26,16 +26,20 @@ const App: React.FC = () => {
     try {
       const result = await generateRecipe(query);
       setRecipe(result);
-      // Update URL to be shareable
-      const url = new URL(window.location.href);
-      url.searchParams.set('dish', encodeURIComponent(query));
-      window.history.pushState({ path: url.href }, '', url.href);
+      // Update URL to be shareable, but only if not in a blob context
+      if (window.location.protocol !== 'blob:') {
+        const url = new URL(window.location.href);
+        url.searchParams.set('dish', encodeURIComponent(query));
+        window.history.pushState({ path: url.href }, '', url.href);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
        // Clear URL param on error
-       const url = new URL(window.location.href);
-       url.searchParams.delete('dish');
-       window.history.pushState({ path: url.href }, '', url.href);
+       if (window.location.protocol !== 'blob:') {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('dish');
+        window.history.pushState({ path: url.href }, '', url.href);
+       }
     } finally {
       setIsLoading(false);
     }
