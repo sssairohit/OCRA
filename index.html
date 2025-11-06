@@ -29,6 +29,62 @@
         border-width: 0;
       }
 
+      /* Styles for Print Preview Modal */
+      .print-preview-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        z-index: 50;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+      }
+      .print-preview-modal {
+        background-color: white;
+        width: 100%;
+        max-width: 800px;
+        height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        padding: 3rem 2rem;
+      }
+      .print-preview-modal-actions {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 60;
+      }
+
+      .print-preview-content {
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+        font-size: 11pt;
+        line-height: 1.5;
+        color: black;
+      }
+      .print-preview-content .print-button { display: none; }
+      .print-preview-content h1, .print-preview-content h2, .print-preview-content h3, .print-preview-content p, .print-preview-content span, .print-preview-content li { color: black !important; }
+      .print-preview-content .dark\\:text-gray-100, .print-preview-content .dark\\:text-gray-200, .print-preview-content .dark\\:text-gray-300, .print-preview-content .dark\\:text-gray-400 { color: black !important; }
+      .print-preview-content .text-orange-500, .print-preview-content .text-orange-600 { color: black !important; }
+      .print-preview-content .bg-orange-500, 
+      .print-preview-content .bg-orange-400,
+      .print-preview-content .bg-orange-50 { background-color: transparent !important; border: 1px solid #eee; }
+      .print-preview-content header h1 { font-size: 20pt; }
+      .print-preview-content header p { font-size: 12pt; }
+      .print-preview-content .print-layout-container { display: block !important; }
+      .print-preview-content #instructions-section { margin-top: 2rem; }
+      .print-preview-content ol li > div:first-child { border: 1px solid #ccc; background-color: #f0f0f0; }
+      .print-preview-content #ingredients-section ul { list-style-type: disc; padding-left: 2rem; }
+      .print-preview-content #ingredients-section ul li { display: list-item; padding-left: 0.5rem; }
+      .print-preview-content #ingredients-section ul li > span:first-child { display: none; }
+      .print-preview-content .no-print-preview { display: none; }
+
+
       @media print {
         @page {
           margin: 1.5cm;
