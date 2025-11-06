@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, Modality } from "@google/genai";
 import type { Recipe } from '../types';
 
 // Initialize the Google Gemini AI client with the API key from environment variables.
@@ -77,6 +77,32 @@ export const generateRecipe = async (dishName: string): Promise<Recipe> => {
     const cleanedJsonText = jsonText.replace(/^```json\n?/, '').replace(/\n?```$/, '');
 
     const recipeData: Recipe = JSON.parse(cleanedJsonText);
+
+    // After getting the recipe, generate an image for it.
+    try {
+        const imagePrompt = `A high-quality, delicious-looking photo of ${recipeData.name}, professionally styled and lit, on a clean background.`;
+        const imageResponse = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: {
+                parts: [{ text: imagePrompt }],
+            },
+            config: {
+                responseModalities: [Modality.IMAGE],
+            },
+        });
+
+        for (const part of imageResponse.candidates[0].content.parts) {
+            if (part.inlineData) {
+                const base64ImageBytes: string = part.inlineData.data;
+                recipeData.imageUrl = `data:image/png;base64,${base64ImageBytes}`;
+                break; // Exit loop once the image is found
+            }
+        }
+    } catch (imageError) {
+        console.error("Could not generate recipe image:", imageError);
+        // Fail silently - the recipe will still be displayed without an image.
+    }
+
     return recipeData;
 
   } catch (error) {

@@ -21,4 +21,5 @@ export interface Recipe {
   instructions: string[];
   tips?: string[];
   nutritionalInfo?: NutritionalInfo;
+  imageUrl?: string;
 }
