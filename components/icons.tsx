@@ -107,3 +107,9 @@ export const MoonIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
     </FeatherIcon>
 );
+
+export const BookmarkIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <FeatherIcon {...props}>
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+    </FeatherIcon>
+);

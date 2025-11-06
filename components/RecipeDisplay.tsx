@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Recipe } from '../types';
-import { ClockIcon, UsersIcon, ListIcon, ClipboardIcon, StarIcon, PrinterIcon, ShareIcon, CheckIcon, HeartIcon } from './icons';
+import { ClockIcon, UsersIcon, ListIcon, ClipboardIcon, StarIcon, PrinterIcon, ShareIcon, CheckIcon, HeartIcon, BookmarkIcon } from './icons';
 
 interface RecipeDisplayProps {
   recipe: Recipe;
@@ -11,6 +11,36 @@ export const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {
     const [unitSystem, setUnitSystem] = useState<'imperial' | 'metric'>('imperial');
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
+    const [isSaved, setIsSaved] = useState(false);
+
+    useEffect(() => {
+        try {
+            const savedRecipes: Recipe[] = JSON.parse(localStorage.getItem('ocra_saved_recipes') || '[]');
+            setIsSaved(savedRecipes.some(r => r.name === recipe.name));
+        } catch (e) {
+            console.error("Could not read saved recipes from localStorage", e);
+            setIsSaved(false);
+        }
+    }, [recipe.name]);
+
+    const handleToggleSave = () => {
+        try {
+            const savedRecipes: Recipe[] = JSON.parse(localStorage.getItem('ocra_saved_recipes') || '[]');
+            const isCurrentlySaved = savedRecipes.some(r => r.name === recipe.name);
+
+            let updatedRecipes: Recipe[];
+            if (isCurrentlySaved) {
+                updatedRecipes = savedRecipes.filter(r => r.name !== recipe.name);
+            } else {
+                updatedRecipes = [...savedRecipes, recipe];
+            }
+
+            localStorage.setItem('ocra_saved_recipes', JSON.stringify(updatedRecipes));
+            setIsSaved(!isCurrentlySaved);
+        } catch (e) {
+            console.error("Could not update saved recipes in localStorage", e);
+        }
+    };
 
     const handleCopy = () => {
         const ingredientsText = recipe.ingredients.map(ingredient => {
@@ -65,7 +95,7 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
 
 
     return (
-        <article className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 animate-fade-in-up overflow-hidden">
+        <article id="recipe-content" className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 animate-fade-in-up overflow-hidden">
             {recipe.imageUrl && (
                 <img 
                     src={recipe.imageUrl} 
@@ -146,14 +176,14 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                     )}
                 </header>
 
-                <div className="flex flex-col md:flex-row gap-8 md:gap-12">
-                    <section className="md:w-1/3">
+                <div className="print-layout-container flex flex-col md:flex-row gap-8 md:gap-12">
+                    <section id="ingredients-section" className="md:w-1/3">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="flex items-center gap-3 text-2xl font-semibold text-gray-800 dark:text-gray-100">
                                 <ListIcon className="w-6 h-6 text-orange-500" />
                                 Ingredients
                             </h2>
-                            <div className="flex items-center gap-1 p-0.5 bg-gray-100 dark:bg-gray-700 rounded-md">
+                            <div className="flex items-center gap-1 p-0.5 bg-gray-100 dark:bg-gray-700 rounded-md print-button">
                                 <button 
                                     onClick={() => setUnitSystem('imperial')}
                                     className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'imperial' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-300' : 'bg-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`}
@@ -181,7 +211,7 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                         </ul>
                     </section>
                     
-                    <section className="md:w-2/3">
+                    <section id="instructions-section" className="md:w-2/3">
                         <h2 className="flex items-center gap-3 text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                             <ClipboardIcon className="w-6 h-6 text-orange-500" />
                             Instructions
@@ -198,7 +228,7 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                 </div>
 
                 {recipe.tips && recipe.tips.length > 0 && (
-                    <section className="mt-8 border-t dark:border-gray-700 pt-6">
+                    <section id="notes-section" className="mt-8 border-t dark:border-gray-700 pt-6">
                         <h2 className="flex items-center gap-3 text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                             <StarIcon className="w-6 h-6 text-orange-500" />
                             Chef's Tips
@@ -211,7 +241,14 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                     </section>
                 )}
 
-                <div className="mt-10 border-t dark:border-gray-700 pt-6 flex items-center justify-end gap-3">
+                <div className="mt-10 border-t dark:border-gray-700 pt-6 flex items-center justify-end gap-3 print-button">
+                    <button 
+                        onClick={handleToggleSave} 
+                        className={`flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 text-[1.2rem] ${isSaved ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-300'}`}
+                    >
+                        <BookmarkIcon className={`w-5 h-5 transition-colors ${isSaved ? 'fill-current' : ''}`} />
+                        {isSaved ? 'Saved' : 'Save'}
+                    </button>
                     <button onClick={handleCopy} className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 text-[1.2rem]">
                         {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardIcon className="w-5 h-5" />}
                         {copied ? 'Copied!' : 'Copy'}
