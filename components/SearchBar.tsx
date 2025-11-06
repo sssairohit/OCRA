@@ -16,19 +16,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isLoading }) => 
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <div className="flex w-full bg-white border-2 border-gray-200 focus-within:ring-2 focus-within:ring-orange-400 focus-within:border-orange-400 transition-all duration-300">
+      <div className="flex w-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-orange-400 dark:focus-within:ring-orange-500 focus-within:border-orange-400 dark:focus-within:border-orange-500 transition-all duration-300">
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="e.g., 'Spaghetti Carbonara', 'Vegan Chocolate Cake'..."
-          className="w-full pl-5 pr-4 py-4 text-[1.4rem] text-gray-700 bg-transparent outline-none"
+          className="w-full pl-5 pr-4 py-4 text-[1.4rem] text-gray-700 dark:text-gray-200 bg-transparent outline-none placeholder-gray-400 dark:placeholder-gray-500"
           disabled={isLoading}
         />
         <button
           type="submit"
           disabled={isLoading || !query}
-          className="flex-shrink-0 flex items-center justify-center px-6 font-semibold text-white bg-orange-500 hover:bg-orange-600 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-300 text-[1.2rem]"
+          className="flex-shrink-0 flex items-center justify-center px-6 font-semibold text-white bg-orange-500 hover:bg-orange-600 focus:outline-none disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors duration-300 text-[1.2rem]"
         >
           {isLoading ? (
             <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
