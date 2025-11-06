@@ -9,6 +9,8 @@ interface RecipeDisplayProps {
 export const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {
     const [copied, setCopied] = useState(false);
     const [unitSystem, setUnitSystem] = useState<'imperial' | 'metric'>('imperial');
+    const [rating, setRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
 
     const handleCopy = () => {
         const ingredientsText = recipe.ingredients.map(ingredient => {
@@ -63,7 +65,7 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
 
 
     return (
-        <article className="bg-white shadow-lg animate-fade-in-up overflow-hidden">
+        <article className="bg-white border border-gray-200 animate-fade-in-up overflow-hidden">
             {recipe.imageUrl && (
                 <img 
                     src={recipe.imageUrl} 
@@ -75,6 +77,31 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                 <header className="border-b pb-6 mb-6">
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-800">{recipe.name}</h1>
                     <p className="mt-3 text-lg text-gray-600">{recipe.description}</p>
+
+                    <div className="mt-4 flex items-center gap-3">
+                        <h3 className="text-[1.4rem] font-semibold text-gray-800">Rate this recipe:</h3>
+                        <div className="flex items-center">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                    key={star}
+                                    type="button"
+                                    onClick={() => setRating(star)}
+                                    onMouseEnter={() => setHoverRating(star)}
+                                    onMouseLeave={() => setHoverRating(0)}
+                                    className="focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 rounded-full"
+                                    aria-label={`Rate ${star} out of 5 stars`}
+                                >
+                                    <StarIcon
+                                        className={`w-7 h-7 cursor-pointer transition-colors duration-200 ${
+                                            (hoverRating || rating) >= star
+                                                ? 'text-orange-500 fill-orange-500'
+                                                : 'text-gray-300 fill-none'
+                                        }`}
+                                    />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                     
                     <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-gray-700">
                         <div className="flex items-center gap-2">
@@ -129,13 +156,13 @@ ${recipe.tips ? `Tips:\n${recipe.tips.join('\n')}` : ''}
                             <div className="flex items-center gap-1 p-0.5 bg-gray-100 rounded-md">
                                 <button 
                                     onClick={() => setUnitSystem('imperial')}
-                                    className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'imperial' ? 'bg-white shadow-sm text-orange-600' : 'bg-transparent text-gray-500 hover:text-gray-800'}`}
+                                    className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'imperial' ? 'bg-white text-orange-600' : 'bg-transparent text-gray-500 hover:text-gray-800'}`}
                                 >
                                     Imperial
                                 </button>
                                 <button 
                                     onClick={() => setUnitSystem('metric')}
-                                    className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'metric' ? 'bg-white shadow-sm text-orange-600' : 'bg-transparent text-gray-500 hover:text-gray-800'}`}
+                                    className={`px-3 py-1 text-[1.1rem] font-medium transition-colors duration-200 rounded-md ${unitSystem === 'metric' ? 'bg-white text-orange-600' : 'bg-transparent text-gray-500 hover:text-gray-800'}`}
                                 >
                                     Metric
                                 </button>

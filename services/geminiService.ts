@@ -20,7 +20,7 @@ const recipeSchema = {
         properties: {
           name: { type: Type.STRING, description: 'The name of the ingredient.' },
           imperial: { type: Type.STRING, description: 'The quantity in imperial units (e.g., "1 cup", "2 tbsp").' },
-          metric: { type: Type.STRING, description: 'The quantity in metric units (e.g., "240ml", "30g").' }
+          metric: { type: Type.STRING, description: 'The quantity in metric units (e.g., "g", "ml").' }
         },
         required: ['name', 'imperial', 'metric']
       },
@@ -99,8 +99,10 @@ export const generateRecipe = async (dishName: string): Promise<Recipe> => {
             }
         }
     } catch (imageError) {
-        console.error("Could not generate recipe image:", imageError);
-        // Fail silently - the recipe will still be displayed without an image.
+        console.warn("Could not generate recipe image. Using a default placeholder.", imageError);
+        // If image generation fails, provide a default placeholder so the UI doesn't break.
+        // The recipe data is still valuable to the user.
+        recipeData.imageUrl = 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
     }
 
     return recipeData;
